@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Outfit;
+    scroll-behavior: smooth;
+}
+body{
+    min-height: 100vh;
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}
+@layer utilities{
+    .scrollbar-hide{
+        -ms-overflow-style: none; /*IE & old edge*/
+        scrollbar-width: none; /*firefox*/
+    }
+    .scrollbar-hide::-webkit-scrollbar{
+        display: none; /*chrome, safari, opera*/
+    }
+}
