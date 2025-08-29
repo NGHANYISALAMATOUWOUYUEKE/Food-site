@@ -1,11 +1,54 @@
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
-
+import { useContext } from "react";
+import { StoreContext } from "./Storecontext";
+import axios from "axios"
 const LoginPopUp = ({ setShowLogin }) => {
+
   const [currState, setCurrState] = useState("Login");
+
+  const {url,setToken} = useContext(StoreContext)
+
+  //connecting frontend to the backend
+  const [data,setData] = useState({
+    name:"",
+    email:"",
+    password:""
+  })
+  const onChangeHandler = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setData(data=>({...data,[name]:value}))
+  }
+
+  //logic of the login
+  const onLogin = async (event) => {
+    event.preventDefault()
+    let newUrl = url ;
+    if (currState === "Login") {
+      newUrl += "/api/user/login"
+    }
+    else{
+      newUrl += "/api/user/register"
+    }
+
+    const response = await axios.post(newUrl,data);
+
+    if (response.data.success) {
+      setToken(response.data.token);
+      localStorage.setItem("token",response.data.token);
+      setShowLogin(false)
+    }
+    else{
+      alert(response.data.message)
+    }
+  }
+
+  
+  
   return (
     <div className="login-popup absolute z-20 w-[100%] h-[100%] bg-[#00000090] grid ">
-      <form className="login-popup-container place-self-center w-[max(23vw,330px)] text-[#808080] bg-white flex flex-col gap-[25px] py-[25px] px-[30px] rounded-[8px] text-[14px] animate-fadeIn duration-500 ">
+      <form onSubmit={onLogin} className="login-popup-container place-self-center w-[max(23vw,330px)] text-[#808080] bg-white flex flex-col gap-[25px] py-[25px] px-[30px] rounded-[8px] text-[14px] animate-fadeIn duration-500 ">
         <div className="login-popup-title flex justify-between items-center text-black">
           <h2>{currState}</h2>
           <img
@@ -20,12 +63,12 @@ const LoginPopUp = ({ setShowLogin }) => {
           {currState === "Login" ? (
             <></>
           ) : (
-            <input className="outline-none border-2 border-[#c9c9c9] p-[10px] rounded-[4px]" type="text" placeholder="Your name" required />
+            <input name='name' onChange={onChangeHandler} value={data.name} className="outline-none border-2 border-[#c9c9c9] p-[10px] rounded-[4px]" type="text" placeholder="Your name" required />
           )}
-          <input className="outline-none border-2 border-[#c9c9c9] p-[10px] rounded-[4px]" type="email" placeholder="Your email" required />
-          <input className="outline-none border-2 border-[#c9c9c9] p-[10px] rounded-[4px]" type="password" placeholder="Password" required />
+          <input name="email" onChange={onChangeHandler} value={data.email} className="outline-none border-2 border-[#c9c9c9] p-[10px] rounded-[4px]" type="email" placeholder="Your email" required />
+          <input name="password" onChange={onChangeHandler} value={data.password} className="outline-none border-2 border-[#c9c9c9] p-[10px] rounded-[4px]" type="password" placeholder="Password" required />
         </div>
-        <button className="border-none p-[10px] rounded-[4px] text-white bg-[tomato] text-[15px] cursor-pointer">{currState === "Sign Up" ? "Create account" : "Login"}</button>
+        <button type="submit" className="border-none p-[10px] rounded-[4px] text-white bg-[tomato] text-[15px] cursor-pointer">{currState === "Sign Up" ? "Create account" : "Login"}</button>
         <div className="login-popup-condition flex items-start gap-[8px] mt-[-15px]">
           <input className="mt-[5px]" type="checkbox" required />
           <p>By contunueing, I agree to the terms of use & privacy policy</p>
